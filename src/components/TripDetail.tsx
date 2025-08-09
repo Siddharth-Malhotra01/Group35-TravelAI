@@ -386,7 +386,6 @@ export function TripDetail({ trip, onBack }: TripDetailProps) {
               />
             )}
             {activeTab === 'expenses' && <ExpenseTracker tripId={tripId} />}
-           {activeTab === 'expenses' && <ExpenseTracker tripId={trip.id} />}
             {activeTab === 'weather' && <WeatherWidget destinations={destinations} />}
             {activeTab === 'dining' && destinations.length > 0 && (
               <div className="space-y-8">
