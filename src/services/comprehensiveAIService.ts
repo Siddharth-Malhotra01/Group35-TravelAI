@@ -145,13 +145,15 @@ export class ComprehensiveAIService {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || `API error: ${response.statusText}`)
+        console.warn('OpenAI API unavailable:', errorData.error || response.statusText)
+        // Return fallback instead of throwing error
+        return this.createFallbackItinerary(request)
       }
 
       const data = await response.json()
       return data
     } catch (error) {
-      console.error('Error generating comprehensive itinerary:', error)
+      console.warn('OpenAI API unavailable, using fallback itinerary:', error)
       return this.createFallbackItinerary(request)
     }
   }
@@ -183,7 +185,7 @@ export class ComprehensiveAIService {
       const data = await response.json()
       return data.suggestions
     } catch (error) {
-      console.error('Error getting destination suggestions:', error)
+      console.warn('OpenAI API unavailable, using fallback suggestions:', error)
       return this.getFallbackSuggestions(query)
     }
   }
@@ -206,7 +208,7 @@ export class ComprehensiveAIService {
       const data = await response.json()
       return data.response
     } catch (error) {
-      console.error('Error in travel expert chat:', error)
+      console.warn('OpenAI API unavailable for chat:', error)
       return "I'm having trouble connecting right now. Please try asking about specific destinations, hotels, restaurants, or travel tips!"
     }
   }

@@ -132,7 +132,15 @@ For each destination, provide detailed recommendations in the following JSON for
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${errorText}`)
+      console.warn(`OpenAI API unavailable: ${response.status} ${response.statusText} - ${errorText}`)
+      // Return fallback instead of throwing error
+      const fallbackRecommendations = createFallbackRecommendations(destination)
+      return new Response(
+        JSON.stringify(fallbackRecommendations),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     const data = await response.json()
@@ -157,11 +165,12 @@ For each destination, provide detailed recommendations in the following JSON for
       },
     )
   } catch (error) {
-    console.error('Error getting location recommendations:', error)
+    console.warn('OpenAI API unavailable, using fallback:', error)
+    const fallbackRecommendations = createFallbackRecommendations(destination)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify(fallbackRecommendations),
       {
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )

@@ -106,7 +106,16 @@ When users ask about destinations, provide comprehensive information including w
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${errorText}`)
+      console.warn(`OpenAI API unavailable: ${response.status} ${response.statusText} - ${errorText}`)
+      // Return helpful fallback message
+      return new Response(
+        JSON.stringify({ 
+          response: "I'm your travel expert assistant, but I'm currently unable to access my full AI capabilities due to service limitations. I can still provide general travel guidance! What destination or travel question can I help you with?" 
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     const data = await response.json()
@@ -119,10 +128,10 @@ When users ask about destinations, provide comprehensive information including w
       },
     )
   } catch (error) {
-    console.error('Error in travel expert chat:', error)
+    console.warn('OpenAI API unavailable for expert chat:', error)
     return new Response(
       JSON.stringify({ 
-        response: "I'm your travel expert assistant! I can help you with detailed destination planning, specific hotel and restaurant recommendations, transportation routes, budgeting, and insider travel tips. What destination or travel question can I help you with today?" 
+        response: "I'm your travel expert assistant, but I'm currently unable to access my full AI capabilities due to service limitations. I can still provide general travel guidance! What destination or travel question can I help you with?" 
       }),
       {
         status: 200,
