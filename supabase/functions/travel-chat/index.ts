@@ -102,7 +102,16 @@ Be conversational, helpful, and enthusiastic about travel while being realistic 
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${errorText}`)
+      console.warn(`OpenAI API unavailable: ${response.status} ${response.statusText} - ${errorText}`)
+      // Return helpful fallback message
+      return new Response(
+        JSON.stringify({ 
+          response: "I'm currently unable to access my AI capabilities due to service limitations. However, I can still help you with general travel advice! Feel free to ask about popular destinations, travel tips, or planning strategies." 
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     const data = await response.json()
@@ -115,10 +124,10 @@ Be conversational, helpful, and enthusiastic about travel while being realistic 
       },
     )
   } catch (error) {
-    console.error('Error in travel chat:', error)
+    console.warn('OpenAI API unavailable for chat:', error)
     return new Response(
       JSON.stringify({ 
-        response: "I'm sorry, I'm having trouble connecting right now. Please try again later, or feel free to ask me about specific destinations, restaurants, activities, or travel planning tips!" 
+        response: "I'm currently unable to access my AI capabilities due to service limitations. However, I can still help you with general travel advice! Feel free to ask about popular destinations, travel tips, or planning strategies." 
       }),
       {
         status: 200, // Return 200 so the frontend can display the fallback message

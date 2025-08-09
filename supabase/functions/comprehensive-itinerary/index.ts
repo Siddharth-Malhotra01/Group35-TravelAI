@@ -236,7 +236,15 @@ Provide specific hotel names, restaurant recommendations with exact dishes, deta
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${errorText}`)
+      console.warn(`OpenAI API unavailable: ${response.status} ${response.statusText} - ${errorText}`)
+      // Return fallback instead of throwing error
+      const fallbackItinerary = createFallbackItinerary(request)
+      return new Response(
+        JSON.stringify(fallbackItinerary),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     const data = await response.json()
@@ -261,11 +269,12 @@ Provide specific hotel names, restaurant recommendations with exact dishes, deta
       },
     )
   } catch (error) {
-    console.error('Error generating comprehensive itinerary:', error)
+    console.warn('OpenAI API unavailable, using fallback:', error)
+    const fallbackItinerary = createFallbackItinerary(request)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify(fallbackItinerary),
       {
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )
